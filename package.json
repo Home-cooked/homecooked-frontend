@@ -39,6 +39,7 @@
   },
   "scripts": {
     "dev": "webpack-dev-server",
+    "build":"webpack --mode=production --optimize-minimize",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\"",
     "tslint": "tslint --project .",
     "webpack": "webpack",
