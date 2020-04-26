@@ -6,12 +6,13 @@ module.exports = {
   devtool: 'source-map',
   devServer: {
     contentBase: path.join(__dirname, '../dist/'),
+    https: true,
     port: 9000,
     publicPath: '/',
     proxy: {
         '/': {
-            target: `http://localhost:${process.env.PORT || 9090}`,
-            secure: false
+          target: `https://localhost:${process.env.PORT || 4001}`,
+          secure: false,
         }
     }
   },
