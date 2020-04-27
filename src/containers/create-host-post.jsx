@@ -56,11 +56,10 @@ export default () => {
         max_size: maxPeople,
         wanted: [],
         pic: image_urls[0].image_url,
-        location: {
-          place_id: address.place_id,
-          lat: address.geometry.location.lat(),
-          lng: address.geometry.location.lng()
-        }
+        lat: address.geometry.location.lat(),
+        lng: address.geometry.location.lng(),
+        place_id: address.place_id,
+        address: address.description
       })
     });
   };
