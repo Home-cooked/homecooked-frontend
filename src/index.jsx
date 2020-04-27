@@ -20,10 +20,10 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#84f3d6"
+      main: "#0f2fa3"
     },
     secondary: {
-      main: "#ffc3da"
+      main: "#c1c1c1"
     },
     microsoft: {
       // Incorperate better

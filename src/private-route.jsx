@@ -4,7 +4,6 @@ import { isAuthenticated } from './auth-req';
 
 
 const PRoute = ({ children, history, ...rest }) => {
-  console.log(rest)
   return(
   <Route
     {...rest}

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 import Window from "../components/window-95";
 import ContentPage from "../components/content-page";
 import PlaceInput from "../components/place-input";
@@ -8,6 +9,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker } from "@material-ui/pickers";
 import ImageUpload from "../components/image-upload";
+import aFetch from "../auth-req";
 
 const useStyles = makeStyles(theme => ({
   fill: {
@@ -22,10 +24,44 @@ const useStyles = makeStyles(theme => ({
 
 export default () => {
   const classes = useStyles();
-  // const [chips, setChips] = useState([]);
-  const [dateTime, setDateTime] = useState(new Date());
+  const [title, setTitle] = useState(undefined);
+  const [dateTime, setDateTime] = useState(null);
   const [address, setAddress] = useState(undefined);
   const [pictures, setPictures] = useState([]);
+  const [maxPeople, setMaxPeople] = useState(undefined);
+  const [description, setDescription] = useState(undefined);
+
+  const valid =
+    title && dateTime && address && pictures.length && maxPeople && description;
+
+  const submit = async () => {
+    const uploadImg = async image => {
+      const body = new FormData();
+      body.append("photo", image);
+      return await aFetch("/mp/image-upload", {
+        method: "POST",
+        noContent: true,
+        body
+      });
+    };
+
+    const image_urls = await Promise.all(pictures.map(pic => uploadImg(pic)));
+
+    const resp = await aFetch("/api/host-post/", {
+      method: "POST",
+      body: JSON.stringify({
+        title,
+        body: description,
+        event_time: dateTime.getTime(),
+        max_size: maxPeople,
+        wanted: [],
+        pic: image_urls[0].image_url,
+        location: { place_id: address.place_id }
+      })
+    });
+
+    console.log(resp);
+  };
 
   return (
     <ContentPage>
@@ -33,7 +69,7 @@ export default () => {
         <Paper square>
           <Grid container spacing={3} className={classes.undoPadding}>
             <Grid item xs={6}>
-              <ImageUpload />
+              <ImageUpload onChange={pics => setPictures(pics)} />
             </Grid>
             <Grid container item xs={6} spacing={3}>
               <Grid item xs={12}>
@@ -42,6 +78,7 @@ export default () => {
                   label="Title"
                   variant="outlined"
                   className={classes.fill}
+                  onChange={({ target: { value } }) => setTitle(value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -52,12 +89,13 @@ export default () => {
               </Grid>
               <Grid item xs={12}>
                 <DateTimePicker
-                  label="DateTimePicker"
+                  label="Event Time"
                   inputVariant="outlined"
                   required
                   value={dateTime}
                   className={classes.fill}
                   onChange={time => setDateTime(time)}
+                  disablePast={true}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -67,6 +105,7 @@ export default () => {
                   label="Max People"
                   type="number"
                   className={classes.fill}
+                  onChange={({ target: { value } }) => setMaxPeople(value)}
                 />
               </Grid>
             </Grid>
@@ -78,7 +117,21 @@ export default () => {
                 label="Description"
                 variant={"outlined"}
                 className={classes.fill}
+                onChange={({ target: { value } }) => setDescription(value)}
               />
+            </Grid>
+            <Grid container justify="flex-end" item xs={12}>
+              <Grid item xs={3}>
+                <Button>Cancel</Button>
+                <Button
+                  disabled={!valid}
+                  color="primary"
+                  variant="contained"
+                  onClick={() => submit()}
+                >
+                  Submit
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Paper>

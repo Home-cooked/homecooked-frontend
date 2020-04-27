@@ -8,37 +8,36 @@ export const isAuthenticated = () => {
   let inProgress = false;
   return inProgress
     ? () => signedIn
-    : (history) => {
-      // If empty user and not signed in, load from token and push history
-      if(!signedIn && Object.keys(User).length === 0 && token){
-        // need to address expired tokens
-        inProgress = true;
-        grab_user_from_token().then(_ => history.push('/'));
-      }
-      return signedIn;
-    };
+    : history => {
+        // If empty user and not signed in, load from token and push history
+        if (!signedIn && Object.keys(User).length === 0 && token) {
+          // need to address expired tokens
+          inProgress = true;
+          grab_user_from_token().then(_ => history.push("/"));
+        }
+        return signedIn;
+      };
 };
-export const setUser =  newUser => User = newUser;
+export const setUser = newUser => (User = newUser);
 
-const aFetch = async (url, { headers, ...body } = {}) => {
-  if(typeof url == 'function'){
+const aFetch = async (url, { headers, noContent = false, ...body } = {}) => {
+  if (typeof url == "function") {
     url = url(User);
   }
   return await (await fetch(url, {
     ...body,
     headers: {
+      ...(noContent ? {} : { "Content-Type": "application/json" }),
       ...(headers || {}),
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`
     }
   })).json();
 };
 
 export default aFetch;
 
-
 const grab_user_from_token = async () => {
-  const { data } = await aFetch('/api/users/self');
+  const { data } = await aFetch("/api/users/self");
   User = data;
   signedIn = true;
 };

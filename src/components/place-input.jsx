@@ -67,6 +67,7 @@ export default ({onSelect = () => {}}) => {
           option.structured_formatting.main_text,
           matches.map(({offset, length}) => [offset, offset + length]),
         );
+        // TODO: Need a way to handle keyboard enter as well as click
         return (
           <Grid container alignItems="center" onClick={() => onSelect(option)}>
             <Grid item>
