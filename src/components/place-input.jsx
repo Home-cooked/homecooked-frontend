@@ -22,13 +22,13 @@ export default ({onSelect = () => {}}) => {
   const classes = useStyles();
   const [input, setInput] = useState('');
   const [options, setOptions] = useState([]);
-  const placesService = usePlacesApi();
+  const { autocompleteService, geocoder } = usePlacesApi();
   useEffect(() => {
     let preempted = false;
 
     const req = () => {
-      if(!placesService){ return ''; }
-      placesService.getPlacePredictions(({input, types: ['address']}), results => setOptions(results));
+      if(!autocompleteService){ return ''; }
+      autocompleteService.getPlacePredictions(({input, types: ['address']}), results => setOptions(results));
     };
 
     if (input === '') {
@@ -41,7 +41,7 @@ export default ({onSelect = () => {}}) => {
     return () => {
       preempted = true;
     };
-  }, [input, placesService]);
+  }, [input, autocompleteService]);
 
   return (
     <Autocomplete
@@ -69,7 +69,14 @@ export default ({onSelect = () => {}}) => {
         );
         // TODO: Need a way to handle keyboard enter as well as click
         return (
-          <Grid container alignItems="center" onClick={() => onSelect(option)}>
+          <Grid container alignItems="center" onClick={() => {
+            geocoder.geocode({
+              placeId: option.place_id
+            }, (res) => {
+              const geometry = res.length ? res[0].geometry : {};
+              onSelect({...option, geometry}); 
+            });
+          }}>
             <Grid item>
               <LocationOnIcon className={classes.icon} />
             </Grid>
