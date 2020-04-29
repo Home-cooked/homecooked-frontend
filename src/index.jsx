@@ -36,7 +36,6 @@ const theme = createMuiTheme({
 
 let Home = () => <div>Welcome valued enterprise customer</div>;
 render(
-  <div>
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <ThemeProvider theme={theme}>
         <Router>
@@ -71,6 +70,6 @@ render(
         </Router>
       </ThemeProvider>
     </MuiPickersUtilsProvider>
-  </div>,
+,
   document.getElementById("root")
 );
