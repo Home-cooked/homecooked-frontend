@@ -3,14 +3,13 @@ import Box from "@material-ui/core/Box";
 import Badge from "@material-ui/core/Badge";
 import AddAPhotoOutlinedIcon from "@material-ui/icons/AddAPhotoOutlined";
 import { DropzoneDialog } from "material-ui-dropzone";
-import CardMedia from "@material-ui/core/CardMedia";
-import useFileReader from "../hooks/file-reader";
+import CardGallery from "./card-gallery";
 
-export default ({ onChange }) => {
+export default ({ onChange, filesLimit = 4 }) => {
   const [open, setOpen] = useState(false);
   const [picCount, setPicCount] = useState(0);
   const [displayB64, setDisplayB64] = useState(undefined);
-  const [{ result }, setFile] = useFileReader();
+  const [files, setFiles] = useState([]);
 
   return (
     <React.Fragment>
@@ -22,18 +21,8 @@ export default ({ onChange }) => {
         style={{ width: "18rem", height: "18rem" }}
         onClick={() => setOpen(true)}
       >
-        {result ? (
-          <Badge
-            badgeContent={picCount}
-            style={{ height: "100%", width: "100%" }}
-            color="primary"
-          >
-            <CardMedia
-              title="Pictures"
-              style={{ height: "100%", width: "100%" }}
-              image={result || "#"}
-            />
-          </Badge>
+        {files.length ? (
+          <CardGallery pictures={files} />
         ) : (
           <div
             style={{
@@ -55,11 +44,12 @@ export default ({ onChange }) => {
         open={open}
         onClick={e => e.stopPropagation()}
         onClose={() => setOpen(false)}
+        filesLimit={filesLimit}
         onSave={files => {
-          setFile(files[0]);
           setPicCount(files.length);
           onChange(files);
           setOpen(false);
+          setFiles(files);
         }}
         showPreviews={true}
         showFileNamesInPreview={true}

@@ -11,8 +11,12 @@ import NotFound from "./components/not-found";
 import ContentPage from "./components/content-page";
 import Login from "./containers/login";
 import UserProfile from "./containers/user-profile";
+import OtherUserProfile from "./containers/other-user-profile";
+import EditUserProfile from "./containers/edit-user";
 import CompleteSignUp from "./containers/complete-signup";
 import CreateHostPost from "./containers/create-host-post";
+import ShowHostPost from "./containers/show-host-post";
+import MapLayout from "./containers/map-layout";
 import { ParseLoginCallbackRoute, ProvideAuthUser  } from "./hooks/auth-user";
 
 import { Button } from "@material-ui/core";
@@ -60,9 +64,22 @@ render(
           <PRoute path="/host-post/create">
             <CreateHostPost />
           </PRoute>
-          <PRoute path="/profile">
+          <PRoute path="/host-post/:host_post_id">
+            <ShowHostPost/>
+          </PRoute>
+          <PRoute path="/map">
+            <MapLayout />
+          </PRoute>
+          <PRoute path="/profile/edit">
+            <EditUserProfile/>
+          </PRoute>
+          <PRoute exact path="/profile">
             <UserProfile />
           </PRoute>
+           <PRoute path="/profile/:user_id">
+            <OtherUserProfile />
+          </PRoute>
+
           <PRoute path="/">
             <Nav />
           </PRoute>

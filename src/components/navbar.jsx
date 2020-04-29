@@ -1,10 +1,10 @@
 import React from "react";
 import { Drawer, List, ListItem } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
-import AlarmIcon from "@material-ui/icons/Alarm";
+import MapIcon from '@material-ui/icons/Map';
 import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined";
 import { makeStyles } from "@material-ui/core/styles";
-import { Link, withRouter } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -12,8 +12,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const navbar = ({ path }) => {
+export default () => {
   const classes = useStyles();
+  const { pathname } = useLocation();
   return (
     <Drawer
       open
@@ -22,13 +23,13 @@ const navbar = ({ path }) => {
       classes={{ paper: classes.paper }}
     >
       <List>
-        <ListItem selected={path === "404"}>
-          <IconButton component={Link} to="404">
-            <AlarmIcon />
+        <ListItem selected={pathname == "/map"}>
+          <IconButton component={Link} to="/map">
+            <MapIcon />
           </IconButton>
         </ListItem>
         <ListItem>
-          <IconButton selected={path === "profile"} component={Link} to="profile">
+          <IconButton selected={pathname == "/profile"} component={Link} to="/profile">
             <PersonOutlineOutlinedIcon />
           </IconButton>
         </ListItem>
@@ -36,5 +37,3 @@ const navbar = ({ path }) => {
     </Drawer>
   );
 };
-
-export default withRouter(navbar);

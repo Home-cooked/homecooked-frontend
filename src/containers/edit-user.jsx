@@ -8,9 +8,8 @@ import ContentPage from "../components/content-page";
 import PlaceInput from "../components/place-input";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import { DateTimePicker } from "@material-ui/pickers";
 import ImageUpload from "../components/image-upload";
-import { aFetch } from "../hooks/auth-user";
+import { aFetch, useAuthUser } from "../hooks/auth-user";
 
 const useStyles = makeStyles(theme => ({
   fill: {
@@ -25,15 +24,14 @@ const useStyles = makeStyles(theme => ({
 
 export default withRouter(({ history }) => {
   const classes = useStyles();
-  const [title, setTitle] = useState(undefined);
-  const [dateTime, setDateTime] = useState(null);
-  const [address, setAddress] = useState(undefined);
-  const [pictures, setPictures] = useState([]);
-  const [maxPeople, setMaxPeople] = useState(undefined);
-  const [description, setDescription] = useState(undefined);
+  const { user, setUser } = useAuthUser();
+  const [firstName, setFirstName] = useState(user.first_name);
+  const [lastName, setLastName] = useState(user.last_name);
+  const [userName, setUserName] = useState(user.user_name);
+  const [picture, setPicture] = useState(undefined);
+  const [aboutMe, setAboutMe] = useState(undefined);
 
-  const valid =
-    title && dateTime && address && pictures.length && maxPeople && description;
+  const valid = firstName && lastName && userName && picture && aboutMe;
 
   const submit = async () => {
     const uploadImg = async image => {
@@ -46,83 +44,79 @@ export default withRouter(({ history }) => {
       });
     };
 
-    const image_urls = await Promise.all(pictures.map(pic => uploadImg(pic)));
+    const { image_url } = await uploadImg(picture);
 
-    const resp = await aFetch("/api/host-post/", {
-      method: "POST",
+    const resp = await aFetch(`/api/users/${user.id}`, {
+      method: "PUT",
       body: JSON.stringify({
-        title,
-        body: description,
-        event_time: dateTime.getTime(),
-        max_size: maxPeople,
-        wanted: [],
-        pic: image_urls[0].image_url,
-        lat: address.geometry.location.lat(),
-        lng: address.geometry.location.lng(),
-        place_id: address.place_id,
-        address: address.description
+        user: {
+          first_name: firstName,
+          last_name: lastName,
+          user_name: userName,
+          pic: image_url,
+          about_me: aboutMe
+        }
       })
     });
 
-    history.push("/map");
+    setUser(resp.data);
+
+    history.push("/profile");
   };
 
   return (
     <ContentPage>
-      <Window title="Host Post Executive Experience Form">
+      <Window title={`EnterPrized™ Customer - ${user.full_name}`}>
         <Paper square>
           <Grid container spacing={3} className={classes.undoPadding}>
             <Grid item xs={6}>
-              <ImageUpload onChange={pics => setPictures(pics)} />
+              <ImageUpload
+                fileLimit={1}
+                onChange={pics => setPicture(pics[0])}
+              />
             </Grid>
             <Grid container item xs={6} spacing={3}>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  value={firstName}
+                  label="First Name"
+                  variant="outlined"
+                  onChange={({ target: { value } }) => setFirstName(value)}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  value={lastName}
+                  label="Last Name"
+                  variant="outlined"
+                  onChange={({ target: { value } }) => setLastName(value)}
+                />
+              </Grid>
+
               <Grid item xs={12}>
                 <TextField
                   required
-                  label="Title"
+                  value={userName}
+                  label="User Name"
                   variant="outlined"
                   className={classes.fill}
-                  onChange={({ target: { value } }) => setTitle(value)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <PlaceInput
-                  className={classes.fill}
-                  onSelect={addr => setAddress(addr)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <DateTimePicker
-                  label="Event Time"
-                  inputVariant="outlined"
-                  required
-                  value={dateTime}
-                  className={classes.fill}
-                  onChange={time => setDateTime(time)}
-                  disablePast={true}
+                  onChange={({ target: { value } }) => setUserName(value)}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
-                  variant="outlined"
-                  label="Max People"
-                  type="number"
+                  value={aboutMe}
+                  multiline
+                  rows={3}
+                  label="About Me"
+                  variant={"outlined"}
                   className={classes.fill}
-                  onChange={({ target: { value } }) => setMaxPeople(value)}
+                  onChange={({ target: { value } }) => setAboutMe(value)}
                 />
               </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                multiline
-                rows={4}
-                label="Description"
-                variant={"outlined"}
-                className={classes.fill}
-                onChange={({ target: { value } }) => setDescription(value)}
-              />
             </Grid>
             <Grid container justify="flex-end" item xs={12}>
               <Grid item xs={3}>
