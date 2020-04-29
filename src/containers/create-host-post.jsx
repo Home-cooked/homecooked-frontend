@@ -9,7 +9,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker } from "@material-ui/pickers";
 import ImageUpload from "../components/image-upload";
-import aFetch from "../auth-req";
+import { aFetch } from "../hooks/auth-user";
 
 const useStyles = makeStyles(theme => ({
   fill: {

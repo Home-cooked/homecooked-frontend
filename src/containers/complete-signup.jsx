@@ -4,7 +4,7 @@ import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import aFetch, { setUser } from "../auth-req";
+import { aFetch } from "../hooks/auth-user";
 import ContentPage from "../components/content-page";
 import Window from "../components/window-95";
 
@@ -37,12 +37,12 @@ const CompleteSignUp = ({history}) => {
   );
 
   const submit = async (user_name) => {
-    setUser(
-      await aFetch(({id}) => `/api/users/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify({user: {user_name}})
-      })
-    );
+    // setUser(
+    //   await aFetch(({id}) => `/api/users/${id}`, {
+    //     method: 'PUT',
+    //     body: JSON.stringify({user: {user_name}})
+    //   })
+    // );
     history.push('/');
   };
 

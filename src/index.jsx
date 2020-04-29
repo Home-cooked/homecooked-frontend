@@ -13,7 +13,7 @@ import Login from "./containers/login";
 import UserProfile from "./containers/user-profile";
 import CompleteSignUp from "./containers/complete-signup";
 import CreateHostPost from "./containers/create-host-post";
-import { ParseLoginCallbackRoute, isAuthenticated } from "./auth-req";
+import { ParseLoginCallbackRoute, ProvideAuthUser  } from "./hooks/auth-user";
 
 import { Button } from "@material-ui/core";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
@@ -54,7 +54,7 @@ render(
               <Home />
             </ContentPage>
           </Route>
-
+          <ProvideAuthUser>
           <PRoute path="/complete-signup">
             <CompleteSignUp />
           </PRoute>
@@ -64,9 +64,10 @@ render(
           <PRoute path="/profile">
             <UserProfile />
           </PRoute>
-          <PRoute exact={!isAuthenticated()} path="/">
+          <PRoute path="/">
             <Nav />
           </PRoute>
+  </ProvideAuthUser>
         </Router>
       </ThemeProvider>
     </MuiPickersUtilsProvider>

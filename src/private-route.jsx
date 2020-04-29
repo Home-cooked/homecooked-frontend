@@ -1,25 +1,16 @@
-import React from 'react';
-import { Route, Redirect, withRouter } from 'react-router-dom';
-import { isAuthenticated } from './auth-req';
-
+import React, { useState, useEffect } from "react";
+import { Route, Redirect, withRouter } from "react-router-dom";
+import { useAuthUser } from "./hooks/auth-user";
+import Login from "./containers/login";
 
 const PRoute = ({ children, history, ...rest }) => {
-  return(
-  <Route
-    {...rest}
-    render={({ location }) =>
-            isAuthenticated(history) ? (
-              children
-            ) : (
-              <Redirect
-                to={{
-                  pathname: "/login",
-                  state: { from: location }
-                }}
-              />
-            )
-           }
-  />
-)};
+  const { user } = useAuthUser();
+  return (
+    <Route
+      {...rest}
+      render={({ location }) => (!!user ? children : <Login />)}
+    />
+  );
+};
 
 export default withRouter(PRoute);
