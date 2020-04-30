@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Popover from "@material-ui/core/Popover";
 import Card from "@material-ui/core/Card";
@@ -47,7 +47,10 @@ export default ({ title, event_time, wanted, pic, id }) => {
             disableRestoreFocus
           >
             <Link to={`host-post/${id}`}>
-              <Card className={classes.cardRoot}>
+              <Card
+                className={classes.cardRoot}
+                onMouseLeave={popupState.close}
+              >
                 <div className={classes.details}>
                   <CardContent className={classes.content}>
                     <Typography component="h5" variant="h5">
