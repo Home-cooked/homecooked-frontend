@@ -13,7 +13,6 @@ import Login from "./containers/login";
 import UserProfile from "./containers/user-profile";
 import OtherUserProfile from "./containers/other-user-profile";
 import EditUserProfile from "./containers/edit-user";
-import CompleteSignUp from "./containers/complete-signup";
 import CreateHostPost from "./containers/create-host-post";
 import ShowHostPost from "./containers/show-host-post";
 import MapLayout from "./containers/map-layout";
@@ -37,15 +36,11 @@ const theme = createMuiTheme({
   }
 });
 
-
 let Home = () => <div>Welcome valued enterprise customer</div>;
 render(
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <ThemeProvider theme={theme}>
         <Router>
-          <Route path="/parse_credentials/:token">
-            <ParseLoginCallbackRoute />
-          </Route>
           <Route path="/login">
             <Login />
           </Route>
@@ -58,9 +53,10 @@ render(
             </ContentPage>
           </Route>
           <ProvideAuthUser>
-          <PRoute path="/complete-signup">
-            <CompleteSignUp />
-          </PRoute>
+           <Route path="/parse_credentials/:token">
+            <ParseLoginCallbackRoute />
+          </Route>
+
           <PRoute path="/host-post/create">
             <CreateHostPost />
           </PRoute>

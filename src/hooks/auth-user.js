@@ -20,23 +20,25 @@ export const aFetch = async (
   })).json();
 };
 
-const authContext = createContext();
-
-export const useAuthUser = () => useContext(authContext);
-
 const useProvideUser = () => {
   const [user, setUser] = useState(undefined);
 
   useEffect(() => {
     const req = async () => {
-      const { data } = await aFetch("/api/users/self");
+      const data = await aFetch("/api/users/self");
       setUser(data);
     };
-    req();
+    if(token){
+      req();
+    }
   }, []);
 
   return [user, setUser];
 };
+
+const authContext = createContext();
+
+export const useAuthUser = () => useContext(authContext);
 
 export const ProvideAuthUser = ({ children }) => {
   const [user, setUser] = useProvideUser();
@@ -49,6 +51,22 @@ export const ProvideAuthUser = ({ children }) => {
 
 export const ParseLoginCallbackRoute = () => {
   const { token } = useParams();
+  const {user, setUser} = useAuthUser();
+  
   localStorage.setItem("token", token);
-  return <Redirect to="/complete-signup" />;
+  useEffect(() => {
+    let mounted = true;
+    const req = async () => {
+      const data = await aFetch("/api/users/self");
+      setUser(data); 
+      if(mounted){
+        setUser(data); 
+      }
+    };
+    req();
+    return () => mounted = false;
+  }, []);
+  return !!user
+    ? user.pic  ? <Redirect to="/map" /> : <Redirect to="/profile/edit" />
+    : <span/>;
 };
