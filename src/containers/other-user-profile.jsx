@@ -9,9 +9,17 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import ContentPage from "../components/content-page";
 import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
+import ReportIcon from "@material-ui/icons/Report";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
+import GroupIcon from "@material-ui/icons/Group";
 import Window from "../components/window-95";
 import UserActivity from "../containers/user-activity";
 import { aFetch, useAuthUser } from "../hooks/auth-user";
+import AdditionalAction, {
+  AdditionalActionItem
+} from "../components/additional-action";
 
 const useStyles = makeStyles(theme => ({
   cardRoot: {
@@ -20,14 +28,22 @@ const useStyles = makeStyles(theme => ({
   details: {
     display: "flex",
     flexDirection: "column",
-    textAlign: "left"
+    textAlign: "left",
+    width: "100%"
   },
   content: {
     flex: "1 0 auto"
   },
   cover: {
     height: 200,
-    width: 200
+    width: 200,
+    flexShrink: 0
+  },
+  postWindow: {
+    width: 600
+  },
+  quickActions: {
+    padding: "10px"
   }
 }));
 
@@ -37,39 +53,92 @@ export default () => {
   const [otherUser, setOtherUser] = useState(undefined);
   const { user, setUser } = useAuthUser();
 
-  useEffect(() => {
-    const req = async () => {
-      const { data } = await aFetch(`api/users/${user_id}`);
-      setOtherUser(data);
-    };
-    req();
-  }, []);
+  useEffect(
+    () => {
+      const req = async () => {
+        const data = await aFetch(`api/users/${user_id}?friends=true`);
+        setOtherUser(data);
+      };
+      req();
+    },
+    [user_id]
+  );
 
-  const friend = async () => {
-    const { data } = await aFetch(`/api/users/${user.id}`, {
-      method: "PUT",
+  const requestFriend = async () => {
+    const { pending_friends } = await aFetch(`/api/users/self/request-friend`, {
+      method: "POST",
       body: JSON.stringify({
-        user: {
-          friends: user.friends
-            ? [...user.friends, otherUser.id]
-            : [otherUser.id]
-        }
+        id: user_id
       })
     });
+    setUser({ ...user, pending_friends });
+  };
 
-    setUser(data);
+  const unfriend = async () => {
+    const {
+      data: { friends }
+    } = await aFetch(`/api/users/self/unfriend`, {
+      method: "DELETE",
+      body: JSON.stringify({
+        id: user_id
+      })
+    });
+    setUser({ ...user, friends });
+  };
+
+  const respondToReq = async val => {
+    const {
+      data: { friends }
+    } = await aFetch(`/api/users/self/friend-response`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: user_id,
+        val
+      })
+    });
+    if (val) {
+      setUser({ ...user, friends });
+    }
+
+    setUser(u => ({
+      ...u,
+      incoming_friends: u.incoming_friends.filter(f => f.id !== user_id)
+    }));
   };
 
   return otherUser ? (
     <ContentPage>
-      <Window title={`EnterPrized™ Customer - ${otherUser.full_name}`}>
+      <Window
+        title={`EnterPrized™ Customer - ${otherUser.full_name}`}
+        className={classes.postWindow}
+      >
         <Card className={classes.cardRoot}>
           <CardMedia className={classes.cover} image={otherUser.pic} />
           <div className={classes.details}>
             <CardContent className={classes.content}>
-              <Typography component="h4" variant="h4">
-                {otherUser.full_name}
-              </Typography>
+              <Grid container alignItems="center" justify="space-between">
+                <Grid item>
+                  <Typography component="h4" variant="h4">
+                    {otherUser.full_name}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <AdditionalAction>
+                    {user.friends.includes(user_id) && (
+                      <AdditionalActionItem
+                        label="Unfriend"
+                        onClick={() => unfriend()}
+                        icon={<PersonAddDisabledIcon />}
+                      />
+                    )}
+                    <AdditionalActionItem
+                      label="Report"
+                      onClick={() => console.log("hey")}
+                      icon={<ReportIcon />}
+                    />
+                  </AdditionalAction>
+                </Grid>
+              </Grid>
               <Typography variant="subtitle2">
                 @{otherUser.user_name}
               </Typography>
@@ -79,11 +148,48 @@ export default () => {
               </Typography>
               <Typography variant="body1">{otherUser.about_me}</Typography>
             </CardContent>
-            <Button onClick={() => friend()}>+Friend</Button>
+            <Grid container justify="flex-end" className={classes.quickActions}>
+              <Grid item>
+                {user.incoming_friends.find(({ id }) => id == user_id) ? (
+                  <React.Fragment>
+                    <Button
+                      variant="contained"
+                      onClick={() => respondToReq(true)}
+                      startIcon={<PersonAddIcon />}
+                      color="primary"
+                    >
+                      Accept Friend
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => respondToReq(false)}
+                      startIcon={<PersonAddDisabledIcon />}
+                      color="secondary"
+                    >
+                      Reject Friend
+                    </Button>
+                  </React.Fragment>
+                ) : user.friends.includes(user_id) ? (
+                  <GroupIcon color="primary" />
+                ) : (
+                  <Button
+                    disabled={user.pending_friends.includes(user_id)}
+                    variant="contained"
+                    onClick={() => requestFriend()}
+                    startIcon={<PersonAddIcon />}
+                    color="primary"
+                  >
+                    {user.pending_friends.includes(user_id)
+                      ? "Request Sent"
+                      : "Add Friend"}
+                  </Button>
+                )}
+              </Grid>
+            </Grid>
           </div>
         </Card>
       </Window>
-      <UserActivity userId={user_id} friends={otherUser && otherUser.friends} />
+      <UserActivity userId={user_id} friends={otherUser.rich_friends} />
     </ContentPage>
   ) : (
     <span />

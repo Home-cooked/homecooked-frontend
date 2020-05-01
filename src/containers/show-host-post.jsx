@@ -2,16 +2,22 @@ import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useParams, Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import Avatar from "@material-ui/core/Avatar";
 import Paper from "@material-ui/core/Paper";
 import ContentPage from "../components/content-page";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardGallery from "../components/card-gallery";
+import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import PersonIcon from "@material-ui/icons/Person";
 import Window from "../components/window-95";
 import { aFetch } from "../hooks/auth-user";
+import { MessageList } from "../components/messages";
+import AdditionalAction, {
+  AdditionalActionItem
+} from "../components/additional-action";
 
 const useStyles = makeStyles(theme => ({
   cardRoot: {
@@ -27,7 +33,16 @@ const useStyles = makeStyles(theme => ({
   },
   cover: {
     height: 200,
-    width: 200
+    width: 200,
+    flexShrink: 0
+  },
+  postWindow: {
+    width: 600
+  },
+  smallAvatar: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: "5px"
   }
 }));
 
@@ -36,14 +51,31 @@ export default () => {
   const { host_post_id } = useParams();
   const [post, setPost] = useState(undefined);
   const [user, setUser] = useState(undefined);
+  const [comments, setComments] = useState(undefined);
 
-  useEffect(() => {
-    const req = async () => {
-      const { data } = await aFetch(`api/host-post/${host_post_id}`);
-      setPost(data);
-    };
-    req();
-  }, []);
+  useEffect(
+    () => {
+      const req = async () => {
+        const { data } = await aFetch(`api/host-post/${host_post_id}`);
+        setPost(data);
+      };
+      req();
+    },
+    [host_post_id]
+  );
+
+  useEffect(
+    () => {
+      const req = async () => {
+        const { data } = await aFetch(
+          `api/comments/host-post?host_post_id=${host_post_id}`
+        );
+        setComments(data);
+      };
+      req();
+    },
+    [host_post_id]
+  );
 
   useEffect(
     () => {
@@ -59,20 +91,63 @@ export default () => {
     [post]
   );
 
+  const makeComment = message => {
+    const req = async () => {
+      const { data } = await aFetch(`api/comments/host-post`, {
+        method: "POST",
+        body: JSON.stringify({ message, host_post_id })
+      });
+      setComments([...comments, data]);
+    };
+    req();
+  };
+
   return (
     <ContentPage>
-      <Window title={`Host Post - SN:${host_post_id}`}>
+      <Window
+        className={classes.postWindow}
+        title={`Host Post - SN:${host_post_id}`}
+      >
         <Card className={classes.cardRoot}>
           <CardMedia className={classes.cover} image={post && post.pic} />
           <div className={classes.details}>
             <CardContent className={classes.content}>
-              <Typography component="h4" variant="h4">
-                {post && post.title}
-              </Typography>
+              <Grid container alignItems="center" justify="space-between">
+                <Grid item>
+                  <Typography component="h4" variant="h4">
+                    {post && post.title}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <AdditionalAction>
+                    <AdditionalActionItem
+                      label="Perons Action"
+                      onClick={() => console.log("hey")}
+                      icon={<PersonIcon />}
+                    />
+                  </AdditionalAction>
+                </Grid>
+              </Grid>
               <Typography variant="subtitle2">
                 {user ? (
                   <Link to={`/profile/${user.id}`}>
-                    @{user.user_name} - {user.full_name}
+                    <Grid item container>
+                      <Grid item>
+                        {user.pic ? (
+                          <Avatar
+                            src={user.pic}
+                            className={classes.smallAvatar}
+                          />
+                        ) : (
+                          <Avatar className={classes.smallAvatar}>
+                            {user.full_name[0]}
+                          </Avatar>
+                        )}
+                      </Grid>
+                      <Grid item>
+                        @{user.user_name} - {user.full_name}
+                      </Grid>
+                    </Grid>
                   </Link>
                 ) : (
                   "**loading**"
@@ -90,6 +165,10 @@ export default () => {
           </div>
         </Card>
       </Window>
+      <MessageList
+        messages={comments}
+        onSubmit={message => makeComment(message)}
+      />
     </ContentPage>
   );
 };

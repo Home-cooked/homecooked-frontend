@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
@@ -39,23 +40,25 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PostView = ({ title, pic, address }) => {
+const PostView = ({ id, title, pic, address }) => {
   const classes = useStyles();
   return (
-    <Card className={classes.cardRoot}>
-      <div className={classes.details}>
-        <CardContent className={classes.content}>
-          <Typography component="h5" variant="h5">
-            {title}
-          </Typography>
-          <Typography variant="subtitle1">
-            {format(new Date(Date.now()), "MMM do h:mma")}
-          </Typography>
-          <Typography variant="subtitle1">{address}</Typography>
-        </CardContent>
-      </div>
-      <CardMedia className={classes.cover} image={pic} />
-    </Card>
+    <Link to={`/host-post/${id}`}>
+      <Card className={classes.cardRoot}>
+        <div className={classes.details}>
+          <CardContent className={classes.content}>
+            <Typography component="h5" variant="h5">
+              {title}
+            </Typography>
+            <Typography variant="subtitle1">
+              {format(new Date(Date.now()), "MMM do h:mma")}
+            </Typography>
+            <Typography variant="subtitle1">{address}</Typography>
+          </CardContent>
+        </div>
+        <CardMedia className={classes.cover} image={pic} />
+      </Card>
+    </Link>
   );
 };
 
@@ -74,13 +77,16 @@ export default ({ userId, friends }) => {
   const [value, setValue] = useState(0);
   const [posts, setPosts] = useState([]);
 
-  useEffect(() => {
-    const req = async () => {
-      const { data } = await aFetch(`api/host-post?user_id=${userId}`);
-      setPosts(data);
-    };
-    req();
-  }, []);
+  useEffect(
+    () => {
+      const req = async () => {
+        const { data } = await aFetch(`api/host-post?user_id=${userId}`);
+        setPosts(data);
+      };
+      req();
+    },
+    [userId]
+  );
 
   return (
     <Window className={classes.spacedWindow} title={`User Activity`}>
@@ -108,15 +114,14 @@ export default ({ userId, friends }) => {
         </TabPanel>
         <TabPanel value={value} index={2}>
           {friends &&
-            friends.map(f => (
+            friends.map(({ id, pic, full_name, user_name }) => (
               <CardHeader
+                key={id}
                 avatar={
-                  <Avatar aria-label="recipe" className={classes.avatar}>
-                    F
-                  </Avatar>
+                  pic ? <Avatar src={pic} /> : <Avatar>{full_name[0]}</Avatar>
                 }
-                title="Friend name"
-                /* subheader="September 14, 2016" */
+                title={full_name}
+                subheader={<Link to={`/profile/${id}`}>@{user_name}</Link>}
               />
             ))}
         </TabPanel>
