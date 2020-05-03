@@ -9,6 +9,7 @@ import PRoute from "./private-route";
 import Nav from "./components/navbar";
 import NotFound from "./components/not-found";
 import ContentPage from "./components/content-page";
+import MySpeedDial from "./components/speed-dial";
 import Login from "./containers/login";
 import UserProfile from "./containers/user-profile";
 import OtherUserProfile from "./containers/other-user-profile";
@@ -20,8 +21,10 @@ import { ParseLoginCallbackRoute, ProvideAuthUser  } from "./hooks/auth-user";
 
 import { Button } from "@material-ui/core";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+const defaultTheme = createMuiTheme({});
 const theme = createMuiTheme({
   palette: {
+    ...defaultTheme.palette,
     primary: {
       main: "#0f2fa3"
     },
@@ -78,6 +81,7 @@ render(
 
           <PRoute path="/">
             <Nav />
+            <MySpeedDial/>
           </PRoute>
   </ProvideAuthUser>
         </Router>

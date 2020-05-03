@@ -1,6 +1,5 @@
 import React from "react";
 import { styled } from "@material-ui/core/styles";
-import MySpeedDial from "./speed-dial";
 
 export default ({ children }) => (
   <div
@@ -24,7 +23,6 @@ export default ({ children }) => (
       }}
     >
       {children}
-    </div>
-    <MySpeedDial />
+    </div>    
   </div>
 );
