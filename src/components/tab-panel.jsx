@@ -7,7 +7,6 @@ export default ({ children, value, index, ...other }) => (
   <Paper
     square
       hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
       {...other}
     >
         {value === index && <Box p={3}>{children}</Box>}
