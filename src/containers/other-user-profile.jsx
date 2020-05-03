@@ -35,15 +35,14 @@ const useStyles = makeStyles(theme => ({
     flex: "1 0 auto"
   },
   cover: {
-    height: 200,
-    width: 200,
+    width: "40%",
     flexShrink: 0
   },
   postWindow: {
     width: 600
   },
   quickActions: {
-    padding: "10px"
+    padding: "15px"
   }
 }));
 
@@ -150,40 +149,41 @@ export default () => {
             </CardContent>
             <Grid container justify="flex-end" className={classes.quickActions}>
               <Grid item>
-                {user.incoming_friends.find(({ id }) => id == user_id) ? (
-                  <React.Fragment>
+                {user.id !== user_id &&
+                  (user.incoming_friends.find(({ id }) => id == user_id) ? (
+                    <React.Fragment>
+                      <Button
+                        variant="contained"
+                        onClick={() => respondToReq(true)}
+                        startIcon={<PersonAddIcon />}
+                        color="primary"
+                      >
+                        Accept Friend
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={() => respondToReq(false)}
+                        startIcon={<PersonAddDisabledIcon />}
+                        color="secondary"
+                      >
+                        Reject Friend
+                      </Button>
+                    </React.Fragment>
+                  ) : user.friends.includes(user_id) ? (
+                    <GroupIcon color="primary" />
+                  ) : (
                     <Button
+                      disabled={user.pending_friends.includes(user_id)}
                       variant="contained"
-                      onClick={() => respondToReq(true)}
+                      onClick={() => requestFriend()}
                       startIcon={<PersonAddIcon />}
                       color="primary"
                     >
-                      Accept Friend
+                      {user.pending_friends.includes(user_id)
+                        ? "Request Sent"
+                        : "Add Friend"}
                     </Button>
-                    <Button
-                      variant="contained"
-                      onClick={() => respondToReq(false)}
-                      startIcon={<PersonAddDisabledIcon />}
-                      color="secondary"
-                    >
-                      Reject Friend
-                    </Button>
-                  </React.Fragment>
-                ) : user.friends.includes(user_id) ? (
-                  <GroupIcon color="primary" />
-                ) : (
-                  <Button
-                    disabled={user.pending_friends.includes(user_id)}
-                    variant="contained"
-                    onClick={() => requestFriend()}
-                    startIcon={<PersonAddIcon />}
-                    color="primary"
-                  >
-                    {user.pending_friends.includes(user_id)
-                      ? "Request Sent"
-                      : "Add Friend"}
-                  </Button>
-                )}
+                  ))}
               </Grid>
             </Grid>
           </div>

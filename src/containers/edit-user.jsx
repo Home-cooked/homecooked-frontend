@@ -28,8 +28,9 @@ export default withRouter(({ history }) => {
   const [firstName, setFirstName] = useState(user.first_name);
   const [lastName, setLastName] = useState(user.last_name);
   const [userName, setUserName] = useState(user.user_name);
+  // Need write file into here for default
   const [picture, setPicture] = useState(undefined);
-  const [aboutMe, setAboutMe] = useState(undefined);
+  const [aboutMe, setAboutMe] = useState(user.about_me);
 
   const valid = firstName && lastName && userName && picture && aboutMe;
 
