@@ -9,7 +9,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import RestaurantIcon from "@material-ui/icons/Restaurant";
-// import Input from "@material-ui/core/Input";
 import TextField from "@material-ui/core/TextField";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -32,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default ({ friends, onSubmit }) => {
+export default ({ friends, onSubmit, disabled }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [chips, setChips] = useState([]);
@@ -41,12 +40,13 @@ export default ({ friends, onSubmit }) => {
   return (
     <div>
       <Button
+        disabled={disabled}
         startIcon={<RestaurantIcon />}
         variant="contained"
         color="primary"
         onClick={() => setOpen(true)}
       >
-        Ask To Join!
+        {disabled ? "In a Pending Group" : "Ask To Join!"}
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Ask To Join!</DialogTitle>
@@ -60,14 +60,15 @@ export default ({ friends, onSubmit }) => {
             options={friends}
             getOptionLabel={({ full_name }) => full_name}
             renderTags={(tagValue, getTagProps) =>
-              tagValue.map(({ user_name, full_name, pic }, index) => (
+              tagValue.map(({ id, user_name, full_name, pic }, index) => (
                 <Chip
+                  key={id}
                   avatar={
-                    pic ? (
-                      <Avatar className={classes.dropDownAvatar} src={pic} />
-                    ) : (
-                      <Avatar>{full_name[0]}</Avatar>
-                    )
+                    <Avatar
+                      className={classes.dropDownAvatar}
+                      src={pic}
+                      alt={full_name}
+                    />
                   }
                   label={full_name}
                   {...getTagProps({ index })}

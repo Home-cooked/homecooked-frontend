@@ -7,9 +7,7 @@ export default ({ children }) => (
       display: "flex",
       justifyContent: "center",
       width: "100%",
-      minHeight: "100%",
-      paddingTop: "15vh",
-      paddingBottom: "15vh"
+      marginTop: "15vh",
     }}
   >
     <div

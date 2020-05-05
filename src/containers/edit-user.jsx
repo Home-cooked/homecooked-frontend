@@ -121,7 +121,7 @@ export default withRouter(({ history }) => {
             </Grid>
             <Grid container justify="flex-end" item xs={12}>
               <Grid item xs={3}>
-                <Button>Cancel</Button>
+                <Button onClick={() => history.goBack()}>Cancel</Button>
                 <Button
                   disabled={!valid}
                   color="primary"

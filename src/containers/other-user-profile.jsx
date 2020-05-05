@@ -11,15 +11,18 @@ import ContentPage from "../components/content-page";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import ReportIcon from "@material-ui/icons/Report";
+import PowerOffIcon from "@material-ui/icons/PowerOff";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
 import GroupIcon from "@material-ui/icons/Group";
+import EditIcon from "@material-ui/icons/Edit";
 import Window from "../components/window-95";
 import UserActivity from "../containers/user-activity";
 import { aFetch, useAuthUser } from "../hooks/auth-user";
 import AdditionalAction, {
   AdditionalActionItem
 } from "../components/additional-action";
+import Link from "../components/styled-link";
 
 const useStyles = makeStyles(theme => ({
   cardRoot: {
@@ -38,14 +41,18 @@ const useStyles = makeStyles(theme => ({
     width: "40%",
     flexShrink: 0
   },
-  postWindow: {
-    width: 600
+  profileWindow: {
+    width: 700
   },
   quickActions: {
     padding: "15px"
+  },
+  link: {
+    color: theme.palette.text.primary
   }
 }));
 
+// TODO split into self/non-self views better, beef up responses
 export default () => {
   const classes = useStyles();
   const { user_id } = useParams();
@@ -55,7 +62,11 @@ export default () => {
   useEffect(
     () => {
       const req = async () => {
-        const data = await aFetch(`api/users/${user_id}?friends=true`);
+        const data = await aFetch(
+          `api/users/${user_id}?friends=true&attending=true${
+            user_id === user.id ? "&incoming_friend_requests=true" : ""
+          }`
+        );
         setOtherUser(data);
       };
       req();
@@ -82,34 +93,35 @@ export default () => {
         id: user_id
       })
     });
-    setUser({ ...user, friends });
+    setUser({
+      ...user,
+      friends,
+      rich_friends: user.rich_friends.filter(({ id }) => id !== user_id)
+    });
+    setOtherUser({
+      ...user,
+      rich_friends: user.rich_friends.filter(({ id }) => id !== user.id)
+    });
   };
 
-  const respondToReq = async val => {
-    const {
-      data: { friends }
-    } = await aFetch(`/api/users/self/friend-response`, {
-      method: "POST",
-      body: JSON.stringify({
-        id: user_id,
-        val
-      })
-    });
-    if (val) {
-      setUser({ ...user, friends });
-    }
-
-    setUser(u => ({
-      ...u,
-      incoming_friends: u.incoming_friends.filter(f => f.id !== user_id)
-    }));
+  const respondToReq = async ({ id, val }) => {
+    const { friends, incoming_friends, rich_friends } = await aFetch(
+      `/api/users/self/friend-response`,
+      {
+        method: "POST",
+        body: JSON.stringify({ id, val })
+      }
+    );
+    console.log(incoming_friends, friends, rich_friends);
+    setUser({ ...user, friends, incoming_friends, rich_friends });
+    setOtherUser({ ...user, friends, incoming_friends, rich_friends });
   };
 
   return otherUser ? (
     <ContentPage>
       <Window
         title={`EnterPrized™ Customer - ${otherUser.full_name}`}
-        className={classes.postWindow}
+        className={classes.profileWindow}
       >
         <Card className={classes.cardRoot}>
           <CardMedia className={classes.cover} image={otherUser.pic} />
@@ -123,18 +135,46 @@ export default () => {
                 </Grid>
                 <Grid item>
                   <AdditionalAction>
-                    {user.friends.includes(user_id) && (
-                      <AdditionalActionItem
-                        label="Unfriend"
-                        onClick={() => unfriend()}
-                        icon={<PersonAddDisabledIcon />}
-                      />
-                    )}
-                    <AdditionalActionItem
-                      label="Report"
-                      onClick={() => console.log("hey")}
-                      icon={<ReportIcon />}
-                    />
+                    {user.friends &&
+                      user.friends.includes(user_id) && (
+                        <AdditionalActionItem
+                          label="Unfriend"
+                          onClick={() => unfriend()}
+                          icon={<PersonAddDisabledIcon />}
+                        />
+                      )}
+                    {otherUser &&
+                      otherUser.id == user.id && [
+                        <Link
+                          key={"edit"}
+                          className={classes.link}
+                          to="/profile-edit"
+                        >
+                          <AdditionalActionItem
+                            className={classes.link}
+                            label="Edit"
+                            icon={<EditIcon />}
+                          />
+                        </Link>,
+                        <AdditionalActionItem
+                          label="Logout"
+                          key={"logout"}
+                          onClick={() => {
+                            localStorage.removeItem("token");
+                            setUser(undefined);
+                          }}
+                          icon={<PowerOffIcon />}
+                        />
+                      ]}
+
+                    {otherUser &&
+                      otherUser.id != user.id && (
+                        <AdditionalActionItem
+                          label="Report"
+                          onClick={() => console.log("naughty")}
+                          icon={<ReportIcon />}
+                        />
+                      )}
                   </AdditionalAction>
                 </Grid>
               </Grid>
@@ -169,17 +209,21 @@ export default () => {
                         Reject Friend
                       </Button>
                     </React.Fragment>
-                  ) : user.friends.includes(user_id) ? (
+                  ) : user.friends && user.friends.includes(user_id) ? (
                     <GroupIcon color="primary" />
                   ) : (
                     <Button
-                      disabled={user.pending_friends.includes(user_id)}
+                      disabled={user.pending_friends
+                        .map(({ id }) => id)
+                        .includes(user_id)}
                       variant="contained"
                       onClick={() => requestFriend()}
                       startIcon={<PersonAddIcon />}
                       color="primary"
                     >
-                      {user.pending_friends.includes(user_id)
+                      {user.pending_friends
+                        .map(({ id }) => id)
+                        .includes(user_id)
                         ? "Request Sent"
                         : "Add Friend"}
                     </Button>
@@ -189,7 +233,13 @@ export default () => {
           </div>
         </Card>
       </Window>
-      <UserActivity userId={user_id} friends={otherUser.rich_friends} />
+      <UserActivity
+        userId={user_id}
+        attending={otherUser.attending}
+        friends={otherUser.rich_friends}
+        incoming={otherUser.incoming_friends || []}
+        respondToReq={i => respondToReq(i)}
+      />
     </ContentPage>
   ) : (
     <span />

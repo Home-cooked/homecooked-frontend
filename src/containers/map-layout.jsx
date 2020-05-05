@@ -37,10 +37,11 @@ export default () => {
 
   return (
     <ContentPage>
-      <div style={{ height: "50vh", width: "50vw", display: "inline-block" }}>
+      <div style={{ height: "60vh", width: "50vw", display: "inline-block" }}>
         <GoogleMapReact
           bootstrapURLKeys={{ key: process.env.GOOGLE_API_KEY }}
           defaultCenter={[31.8204314, -95.7952901]}
+          onGoogleApiLoaded={() => setCenterCoords(centerCoords)}
           center={centerCoords}
           defaultZoom={12}
         >

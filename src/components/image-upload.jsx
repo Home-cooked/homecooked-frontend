@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Box from "@material-ui/core/Box";
-import Badge from "@material-ui/core/Badge";
 import AddAPhotoOutlinedIcon from "@material-ui/icons/AddAPhotoOutlined";
 import { DropzoneDialog } from "material-ui-dropzone";
 import CardGallery from "./card-gallery";
@@ -15,10 +14,8 @@ export default ({ onChange, filesLimit = 4 }) => {
     <React.Fragment>
       <Box
         border={1}
-        borderColor="primary"
-        bgcolor="background.paper"
+        borderColor="secondary.main"
         borderRadius={5}
-        style={{ width: "18rem", height: "18rem" }}
         onClick={() => setOpen(true)}
       >
         {files.length ? (

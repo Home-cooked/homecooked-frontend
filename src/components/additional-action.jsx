@@ -6,6 +6,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 
 const StyledMenu = withStyles({
   paper: {
@@ -27,35 +28,28 @@ const StyledMenu = withStyles({
   />
 ));
 
-export const AdditionalActionItem = ({ icon, label, onClick }) => (
-  <MenuItem onClick={onClick}>
-    <ListItemIcon>
-      {React.cloneElement(icon, { fontSize: "small" })}
-    </ListItemIcon>
-    <ListItemText primary={label} />
-  </MenuItem>
-);
-
-export default ({ children }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
+export const AdditionalActionItem = ({ icon, label, className, onClick }) => {
   return (
-    <div>
-      <IconButton
-        variant="contained"
-        onClick={({ currentTarget }) => setAnchorEl(currentTarget)}
-      >
-        <MoreVertIcon />
-      </IconButton>
-      <StyledMenu
-        id="customized-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
-      >
-        {children}
-      </StyledMenu>
-    </div>
+    <MenuItem onClick={e => onClick(e)} className={className}>
+      <ListItemIcon>
+        {React.cloneElement(icon, { fontSize: "small" })}
+      </ListItemIcon>
+      <ListItemText primary={label} />
+    </MenuItem>
   );
 };
+
+export default ({ children }) => (
+  <PopupState variant="popover">
+    {popupState => (
+      <React.Fragment>
+        <IconButton variant="contained" {...bindTrigger(popupState)}>
+          <MoreVertIcon />
+        </IconButton>
+        <StyledMenu {...bindMenu(popupState)} keepMounted>
+          <div>{children}</div>
+        </StyledMenu>
+      </React.Fragment>
+    )}
+  </PopupState>
+);
