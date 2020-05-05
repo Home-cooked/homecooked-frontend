@@ -78,7 +78,7 @@ export default () => {
   const submitGroup = async ({ users, note }) => {
     const {
       data: { submit_groups, pending_groups }
-    } = await aFetch(`api/host-post/${post.id}/submit-group`, {
+    } = await aFetch(`/api/host-post/${post.id}/submit-group`, {
       method: "POST",
       body: JSON.stringify({
         users,
@@ -95,7 +95,7 @@ export default () => {
   const respondToGroup = async (groupId, val) => {
     const {
       data: { submit_groups, pending_groups }
-    } = await aFetch(`api/host-post/${host_post_id}/respond-to-group`, {
+    } = await aFetch(`/api/host-post/${host_post_id}/respond-to-group`, {
       method: "POST",
       body: JSON.stringify({ val, submit_group_id: groupId })
     });
@@ -107,7 +107,7 @@ export default () => {
   };
 
   const makeComment = async message => {
-    const { data } = await aFetch(`api/comments/host-post`, {
+    const { data } = await aFetch(`/api/comments/host-post`, {
       method: "POST",
       body: JSON.stringify({ message, host_post_id })
     });

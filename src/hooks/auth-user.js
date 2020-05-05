@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { useParams, Redirect } from "react-router-dom";
 
+document.domain = process.env.TOP_LEVEL_DOMAIN || document.domain;
+
 let token = localStorage.getItem("token");
 
 export const aFetch = async (
   url,
   { headers, noContent = false, ...body } = {}
 ) => {
-  if (typeof url == "function") {
-    url = url(User);
-  }
-  return await (await fetch(url, {
+  let rich_url = `${process.env.SERVER_DOMAIN || ''}${url[0] == '/' ? url : `/${url}`}`;
+  return await (await fetch(rich_url, {
     ...body,
     headers: {
       ...(noContent ? {} : { "Content-Type": "application/json" }),

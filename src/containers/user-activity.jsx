@@ -81,7 +81,7 @@ export default ({ userId, friends, attending, incoming, respondToReq }) => {
   useEffect(
     () => {
       const req = async () => {
-        const { data } = await aFetch(`api/host-post?user_id=${userId}`);
+        const { data } = await aFetch(`/api/host-post?user_id=${userId}`);
         setPosts(data);
       };
       req();

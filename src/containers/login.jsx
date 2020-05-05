@@ -12,7 +12,8 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 
 const googleSignUp = async () => {
-  const resp = await fetch("/auth/google", {
+  let url = `${process.env.SERVER_DOMAIN || ""}/auth/google`;
+  const resp = await fetch(url, {
     "Content-Type": "application/json",
     redirect: "manual"
   });
