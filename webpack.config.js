@@ -44,7 +44,9 @@ module.exports = {
       filename: 'index.html',
       template: './src/index.html'
     }),
-    new Dotenv()
+    new Dotenv({
+      systemvars: true
+    })
   ],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
