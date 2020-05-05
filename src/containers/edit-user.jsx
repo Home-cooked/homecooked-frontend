@@ -62,7 +62,7 @@ export default withRouter(({ history }) => {
 
     setUser(resp.data);
 
-    history.push("/profile");
+    history.push(`/profile/${user.id}`);
   };
 
   return (

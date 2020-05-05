@@ -71,6 +71,6 @@ export const ParseLoginCallbackRoute = () => {
     return () => mounted = false;
   }, []);
   return !!user
-    ? user.pic  ? <Redirect to="/map" /> : <Redirect to="/profile/edit" />
+    ? user.pic  ? <Redirect to="/map" /> : <Redirect to="/profile-edit" />
     : <span/>;
 };
