@@ -7,54 +7,73 @@ import {
   ListItemText
 } from "@material-ui/core";
 import MapIcon from "@material-ui/icons/Map";
-
+import NotificationsIcon from "@material-ui/icons/Notifications";
 import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined";
 import { makeStyles } from "@material-ui/core/styles";
-import { Link, useLocation } from "react-router-dom";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
+import { useLocation } from "react-router-dom";
+import Link from "./styled-link";
+import clsx from "clsx";
+import { useAuthUser } from "../hooks/auth-user";
 
 const useStyles = makeStyles(theme => ({
   paper: {
     backgroundColor: "#c1c1c1"
   },
-  icon: {
-    height: "35px"
+  closed: {
+    width: "60px"
+  },
+  respectiveList: {
+    width: "inherit"
+  },
+  link: {
+    color: theme.palette.text.secondary
+  },
+  hidden: {
+    overflow: "hidden"
   }
 }));
 
-const NavItem = ({ iconOnly, path, children, label }) => {
+const NavItem = ({ path, children, label }) => {
   const classes = useStyles();
   const { pathname } = useLocation();
   return (
-    <ListItem component={Link} to={path} selected={pathname == path}>
-      <ListItemIcon className={classes.icon}>{children}</ListItemIcon>
-      <ListItemText hidden={iconOnly} primary={label} />
-    </ListItem>
+    <Link className={classes.link} to={path} key={path}>
+      <ListItem button selected={pathname == path}>
+        <ListItemIcon>{children}</ListItemIcon>
+        <ListItemText className={classes.link} primary={label} />
+      </ListItem>
+    </Link>
   );
 };
 
 export default () => {
   const classes = useStyles();
   const [hover, setHover] = useState(false);
+  const { user } = useAuthUser();
 
-  return (
+  return user ? (
     <Drawer
       open
       anchor="left"
       variant="permanent"
-      classes={{ paper: classes.paper }}
+      className={clsx(classes.paper, !hover && classes.closed)}
+      classes={{ paper: clsx(classes.respectiveList, classes.hidden) }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       <List>
-        <NavItem iconOnly={!hover} path={"/map"} label="Map">
+        <NavItem path={"/map"} label="Map">
           <MapIcon />
         </NavItem>
-        <NavItem iconOnly={!hover} path={"/profile"} label="Profile">
+        <NavItem path={`/profile/${user.id}`} label="Profile">
           <PersonOutlineOutlinedIcon />
+        </NavItem>
+        <NavItem path={"/notifications"} label="Notifications">
+          <NotificationsIcon />
         </NavItem>
       </List>
     </Drawer>
+  ) : (
+    <span />
   );
 };

@@ -22,18 +22,22 @@ export const aFetch = async (
 
 const useProvideUser = () => {
   const [user, setUser] = useState(undefined);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const req = async () => {
       const data = await aFetch("/api/users/self");
+      setLoading(false);
       setUser(data);
     };
     if(token){
       req();
+    }else{
+      setLoading(false);
     }
   }, []);
 
-  return [user, setUser];
+  return [user, loading, setUser];
 };
 
 const authContext = createContext();
@@ -41,9 +45,9 @@ const authContext = createContext();
 export const useAuthUser = () => useContext(authContext);
 
 export const ProvideAuthUser = ({ children }) => {
-  const [user, setUser] = useProvideUser();
+  const [user, loading, setUser] = useProvideUser();
   return (
-    <authContext.Provider value={{ user, setUser }}>
+    <authContext.Provider value={{ user, loading, setUser }}>
       {children}
     </authContext.Provider>
   );

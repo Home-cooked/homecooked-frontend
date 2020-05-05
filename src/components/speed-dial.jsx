@@ -5,9 +5,7 @@ import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddIcon from '@material-ui/icons/Add';
-
-import Modal from '@material-ui/core/Modal';
-import Paper from '@material-ui/core/Paper';
+import { useAuthUser } from "../hooks/auth-user";
 
 const useStyles = makeStyles(theme => ({
   speedDial: {
@@ -24,14 +22,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const actions = [
-  { icon: <HomeOutlinedIcon />, name: 'Host Post', link: '/host-post/create' },
+  { icon: <HomeOutlinedIcon />, name: 'Host Post', link: '/host-post-create' },
 ];
 
 export default withRouter(({ history }) => {
   const classes = useStyles();
+  const { user } = useAuthUser();
   const [open, setOpen] = useState(false);
   
-  return (
+  return user ? (
     <SpeedDial
       ariaLabel="SpeedDial"
       direction={"up"}
@@ -55,5 +54,5 @@ export default withRouter(({ history }) => {
             </SpeedDialAction>
           ))}
     </SpeedDial>
-  );
+  ): <span/>;
 });
