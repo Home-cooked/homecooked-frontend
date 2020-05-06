@@ -57,7 +57,9 @@ render(
             <ParseLoginCallbackRoute />
           </Route>
 
-          <PRoute exact path="/" />
+          <PRoute exact path="/" >
+            <MapLayout />
+          </PRoute>
           <PRoute path="/host-post-create">
             <CreateHostPost />
           </PRoute>
