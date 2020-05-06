@@ -99,7 +99,7 @@ export default () => {
       rich_friends: user.rich_friends.filter(({ id }) => id !== user_id)
     });
     setOtherUser({
-      ...user,
+      ...otherUser,
       rich_friends: user.rich_friends.filter(({ id }) => id !== user.id)
     });
   };
@@ -112,7 +112,7 @@ export default () => {
         body: JSON.stringify({ id, val })
       }
     );
-    console.log(incoming_friends, friends, rich_friends);
+
     setUser({ ...user, friends, incoming_friends, rich_friends });
     setOtherUser({ ...user, friends, incoming_friends, rich_friends });
   };

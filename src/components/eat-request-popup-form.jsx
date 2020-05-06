@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default ({ friends, onSubmit, disabled }) => {
+export default ({ friends, onSubmit, pending, accepted }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [chips, setChips] = useState([]);
@@ -40,13 +40,17 @@ export default ({ friends, onSubmit, disabled }) => {
   return (
     <div>
       <Button
-        disabled={disabled}
+        disabled={pending || accepted}
         startIcon={<RestaurantIcon />}
         variant="contained"
         color="primary"
         onClick={() => setOpen(true)}
       >
-        {disabled ? "In a Pending Group" : "Ask To Join!"}
+        {pending
+          ? "In a Pending Group"
+          : accepted
+            ? "Accepted!"
+            : "Ask To Join!"}
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Ask To Join!</DialogTitle>

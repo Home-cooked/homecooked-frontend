@@ -13,7 +13,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import CardGallery from "../components/card-gallery";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import PersonIcon from "@material-ui/icons/Person";
+import ReportIcon from "@material-ui/icons/Report";
 import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import Window from "../components/window-95";
 import { aFetch, useAuthUser } from "../hooks/auth-user";
@@ -66,7 +66,7 @@ export default () => {
     () => {
       const req = async () => {
         const { data } = await aFetch(
-          `api/host-post/${host_post_id}?user=true&comments=true&submit_groups=true`
+          `api/host-post/${host_post_id}?user=true&comments=true&submit_groups=true&attending=true`
         );
         setPost(data);
       };
@@ -77,7 +77,7 @@ export default () => {
 
   const submitGroup = async ({ users, note }) => {
     const {
-      data: { submit_groups, pending_groups }
+      data: { submit_groups, attending }
     } = await aFetch(`/api/host-post/${post.id}/submit-group`, {
       method: "POST",
       body: JSON.stringify({
@@ -88,13 +88,13 @@ export default () => {
     setPost({
       ...post,
       submit_groups,
-      pending_groups
+      attending
     });
   };
 
   const respondToGroup = async (groupId, val) => {
     const {
-      data: { submit_groups, pending_groups }
+      data: { submit_groups, attending }
     } = await aFetch(`/api/host-post/${host_post_id}/respond-to-group`, {
       method: "POST",
       body: JSON.stringify({ val, submit_group_id: groupId })
@@ -102,7 +102,7 @@ export default () => {
     setPost({
       ...post,
       submit_groups,
-      pending_groups
+      attending
     });
   };
 
@@ -136,9 +136,9 @@ export default () => {
                 <Grid item xs={2}>
                   <AdditionalAction>
                     <AdditionalActionItem
-                      label="Perons Action"
-                      onClick={() => console.log("hey")}
-                      icon={<PersonIcon />}
+                      label="Report"
+                      onClick={() => console.log("naughty")}
+                      icon={<ReportIcon />}
                     />
                   </AdditionalAction>
                 </Grid>
@@ -200,9 +200,10 @@ export default () => {
                 {post &&
                   post.user_id !== user.id && (
                     <EatRequestForm
-                      disabled={post.submit_groups
+                      pending={post.submit_groups
                         .flatMap(({ users }) => users)
                         .find(({ id }) => id == user.id)}
+                      accepted={post.attending.find(({ id }) => id == user.id)}
                       friends={user.rich_friends}
                       onSubmit={submitGroup}
                     />
