@@ -41,7 +41,8 @@ const useStyles = makeStyles(theme => ({
     width: 170
   },
   spacedWindow: {
-    marginTop: "50px"
+    marginTop: "50px",
+    marginBottom: "75px"
   }
 }));
 
