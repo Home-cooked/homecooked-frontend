@@ -52,7 +52,7 @@ export default ({ pictures }) => {
         setFile(pictures[idx]);
       }
     },
-    [idx]
+    [idx, pictures]
   );
 
   const link = pictures.length
