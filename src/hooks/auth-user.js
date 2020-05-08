@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { useParams, Redirect } from "react-router-dom";
+import { FullStoryAPI } from 'react-fullstory';
 
 document.domain = process.env.TOP_LEVEL_DOMAIN || document.domain;
 
@@ -29,6 +30,11 @@ const useProvideUser = () => {
       const data = await aFetch("/api/users/self");
       setLoading(false);
       setUser(data);
+
+      FullStoryAPI('identify', data.user_id, {
+        email: data.email
+      });
+
     };
     if(token){
       req();
