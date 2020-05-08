@@ -5,6 +5,7 @@ import { render } from "react-dom";
 import { HashRouter as Router, Route } from "react-router-dom";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import * as Sentry from '@sentry/browser';
 import PRoute from "./private-route";
 import Nav from "./components/navbar";
 import NotFound from "./components/not-found";
@@ -16,9 +17,14 @@ import CreateHostPost from "./containers/create-host-post";
 import ShowHostPost from "./containers/show-host-post";
 import MapLayout from "./containers/map-layout";
 import { ParseLoginCallbackRoute, ProvideAuthUser } from "./hooks/auth-user";
-
 import { Button } from "@material-ui/core";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+
+if(process.env.CONTEXT == "production"){
+  Sentry.init({dsn: process.env.SENTRY});
+}
+
+
 const defaultTheme = createMuiTheme({});
 const theme = createMuiTheme({
   palette: {

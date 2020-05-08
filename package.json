@@ -11,6 +11,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.50",
     "@material-ui/pickers": "^3.2.10",
+    "@sentry/browser": "^5.15.5",
     "autosuggest-highlight": "^3.1.1",
     "babel-loader": "^8.0.6",
     "clsx": "^1.1.0",
