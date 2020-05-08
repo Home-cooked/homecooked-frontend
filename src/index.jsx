@@ -6,6 +6,7 @@ import { HashRouter as Router, Route } from "react-router-dom";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import * as Sentry from '@sentry/browser';
+import * as FullStory from '@fullstory/browser';
 import PRoute from "./private-route";
 import Nav from "./components/navbar";
 import NotFound from "./components/not-found";
@@ -22,8 +23,8 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 
 if(process.env.CONTEXT == "production"){
   Sentry.init({dsn: process.env.SENTRY});
+  FullStory.init({ orgId: process.env.FULLSTORY });
 }
-
 
 const defaultTheme = createMuiTheme({});
 const theme = createMuiTheme({
