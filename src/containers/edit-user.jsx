@@ -31,10 +31,12 @@ export default withRouter(({ history }) => {
   // Need write file into here for default
   const [picture, setPicture] = useState(user.pic || undefined);
   const [aboutMe, setAboutMe] = useState(user.about_me);
+  const [loading, setLoading] = useState(false);
 
   const valid = firstName && lastName && userName && picture && aboutMe;
 
   const submit = async () => {
+    setLoading(true);
     const uploadImg = async image => {
       const body = new FormData();
       body.append("photo", image);
@@ -62,13 +64,17 @@ export default withRouter(({ history }) => {
     });
 
     setUser(resp.data);
+    setLoading(false);
 
     history.push(`/profile/${user.id}`);
   };
 
   return (
     <ContentPage>
-      <Window title={`EnterPrized™ Customer - ${user.full_name}`}>
+      <Window
+        title={`EnterPrized™ Customer - ${user.full_name}`}
+        loading={loading}
+      >
         <Paper square>
           <Grid container spacing={3} className={classes.undoPadding}>
             <Grid item xs={6}>
