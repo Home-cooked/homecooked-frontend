@@ -4,11 +4,11 @@ import AddAPhotoOutlinedIcon from "@material-ui/icons/AddAPhotoOutlined";
 import { DropzoneDialog } from "material-ui-dropzone";
 import CardGallery from "./card-gallery";
 
-export default ({ onChange, filesLimit = 4 }) => {
+export default ({ onChange, filesLimit = 4, initialFiles = [] }) => {
   const [open, setOpen] = useState(false);
   const [picCount, setPicCount] = useState(0);
   const [displayB64, setDisplayB64] = useState(undefined);
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(initialFiles);
 
   return (
     <React.Fragment>

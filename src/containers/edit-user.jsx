@@ -29,7 +29,7 @@ export default withRouter(({ history }) => {
   const [lastName, setLastName] = useState(user.last_name);
   const [userName, setUserName] = useState(user.user_name);
   // Need write file into here for default
-  const [picture, setPicture] = useState(undefined);
+  const [picture, setPicture] = useState(user.pic || undefined);
   const [aboutMe, setAboutMe] = useState(user.about_me);
 
   const valid = firstName && lastName && userName && picture && aboutMe;
@@ -45,7 +45,8 @@ export default withRouter(({ history }) => {
       });
     };
 
-    const { image_url } = await uploadImg(picture);
+    const { image_url } =
+      user.pic != picture ? await uploadImg(picture) : { image_url: null };
 
     const resp = await aFetch(`/api/users/${user.id}`, {
       method: "PUT",
@@ -54,8 +55,8 @@ export default withRouter(({ history }) => {
           first_name: firstName,
           last_name: lastName,
           user_name: userName,
-          pic: image_url,
-          about_me: aboutMe
+          about_me: aboutMe,
+          ...(image_url ? { pic: image_url } : {})
         }
       })
     });
@@ -74,6 +75,7 @@ export default withRouter(({ history }) => {
               <ImageUpload
                 fileLimit={1}
                 onChange={pics => setPicture(pics[0])}
+                initialFiles={picture ? [picture] : []}
               />
             </Grid>
             <Grid container item xs={6} spacing={3}>
