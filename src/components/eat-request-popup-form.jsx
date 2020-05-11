@@ -37,10 +37,13 @@ export default ({ friends, onSubmit, pending, accepted }) => {
   const [chips, setChips] = useState([]);
   const [note, setNote] = useState("");
 
+  // TODO remove once default json population/embedded schema on back end
+  friends = friends || [];
+
   return (
     <div>
       <Button
-        disabled={pending || accepted}
+        disabled={!!(pending || accepted)}
         startIcon={<RestaurantIcon />}
         variant="contained"
         color="primary"
