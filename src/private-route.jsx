@@ -10,7 +10,15 @@ const PRoute = ({ children, history, ...rest }) => {
     <Route
       {...rest}
       render={({ location }) =>
-        loading ? <CircularProgress /> : !!user ? children : <Login />
+        loading ? (
+          <div style={{ marginTop: "20%", textAlign: "center" }}>
+            <CircularProgress />{" "}
+          </div>
+        ) : !!user ? (
+          children
+        ) : (
+          <Login />
+        )
       }
     />
   );
