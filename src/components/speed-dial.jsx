@@ -3,8 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { withRouter } from "react-router-dom";
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
-import AddIcon from '@material-ui/icons/Add';
 import { useAuthUser } from "../hooks/auth-user";
 
 const useStyles = makeStyles(theme => ({
@@ -35,7 +35,7 @@ export default withRouter(({ history }) => {
       ariaLabel="SpeedDial"
       direction={"up"}
       open={open}
-      icon={<AddIcon/>}
+      icon={<SpeedDialIcon/>}
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
       className={classes.speedDial}
