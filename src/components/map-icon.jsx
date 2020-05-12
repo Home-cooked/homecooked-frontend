@@ -14,7 +14,8 @@ import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles(theme => ({
   cardRoot: {
-    display: "flex"
+    display: "flex",
+    cursor: "pointer"
   },
   details: {
     display: "flex",
@@ -40,20 +41,20 @@ export default ({ title, event_time, wanted, pic, id, user }) => {
     <PopupState variant="popover" popupId="demoPopover">
       {popupState => (
         <div>
-          <HomeIcon {...bindHover(popupState)} />
-          <Popover
-            {...bindPopover(popupState)}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "center"
-            }}
-            transformOrigin={{
-              vertical: "bottom",
-              horizontal: "left"
-            }}
-            disableRestoreFocus
-          >
-            <Link to={`host-post/${id}`}>
+          <Link to={`host-post/${id}`}>
+            <HomeIcon {...bindHover(popupState)} />
+            <Popover
+              {...bindPopover(popupState)}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "center"
+              }}
+              transformOrigin={{
+                vertical: "bottom",
+                horizontal: "left"
+              }}
+              disableRestoreFocus
+            >
               <Card
                 className={classes.cardRoot}
                 onMouseLeave={popupState.close}
@@ -88,8 +89,8 @@ export default ({ title, event_time, wanted, pic, id, user }) => {
                 </div>
                 <CardMedia className={classes.cover} image={pic} />
               </Card>
-            </Link>
-          </Popover>
+            </Popover>
+          </Link>
         </div>
       )}
     </PopupState>
