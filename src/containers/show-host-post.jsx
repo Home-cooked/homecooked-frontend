@@ -61,14 +61,17 @@ export default () => {
   const { host_post_id } = useParams();
   const [post, setPost] = useState(undefined);
   const { user, setUser } = useAuthUser();
+  const [loading, setLoading] = useState(false);
 
   useEffect(
     () => {
+      setLoading(true);
       const req = async () => {
         const { data } = await aFetch(
           `api/host-post/${host_post_id}?user=true&comments=true&submit_groups=true&attending=true`
         );
         setPost(data);
+        setLoading(false);
       };
       req();
     },
@@ -122,6 +125,7 @@ export default () => {
       <Window
         className={classes.postWindow}
         title={`Host Post - SN:${host_post_id}`}
+        loading={loading}
       >
         <Card className={classes.cardRoot}>
           <CardMedia className={classes.cover} image={post && post.pic} />
