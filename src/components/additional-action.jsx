@@ -28,7 +28,12 @@ const StyledMenu = withStyles({
   />
 ));
 
-export const AdditionalActionItem = ({ icon, label, className, onClick }) => {
+export const AdditionalActionItem = ({
+  icon,
+  label,
+  className,
+  onClick = () => {}
+}) => {
   return (
     <MenuItem onClick={e => onClick(e)} className={className}>
       <ListItemIcon>
