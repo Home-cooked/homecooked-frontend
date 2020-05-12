@@ -21,6 +21,10 @@ const useStyles = makeStyles(theme => ({
     width: theme.spacing(3),
     height: theme.spacing(3),
     marginRight: "5px"
+  },
+  fauxLink: {
+    color: theme.palette.microsoft.green,
+    cursor: "pointer"
   }
 }));
 
@@ -30,8 +34,12 @@ export default ({ title, people }) => {
 
   return (
     <div>
-      <Grid onClick={() => setOpen(true)} container>
-        <Typography variant="subtitle1"> {title}:</Typography>
+      <Grid
+        onClick={() => setOpen(true)}
+        container
+        className={classes.fauxLink}
+      >
+        <Typography variant="subtitle1">{title}:</Typography>
         <div className={classes.undoGroupNegMargin}>
           <AvatarGroup max={13} spacing="small">
             {people.map(({ id, pic, first_name }) => (

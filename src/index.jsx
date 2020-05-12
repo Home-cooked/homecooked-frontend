@@ -37,7 +37,6 @@ const theme = createMuiTheme({
       main: "#c1c1c1"
     },
     microsoft: {
-      // Incorperate better
       grey: "#c1c1c1",
       green: "#008080"
     }
