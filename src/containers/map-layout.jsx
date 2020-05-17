@@ -44,6 +44,7 @@ export default () => {
           onGoogleApiLoaded={() => setCenterCoords(centerCoords)}
           center={centerCoords}
           defaultZoom={12}
+          onChange = {({center:{lat,lng}}) => setCenterCoords([lat,lng])}
         >
           {hostPosts.map(post => <MapIcon key={post.id} {...post} />)}
         </GoogleMapReact>
